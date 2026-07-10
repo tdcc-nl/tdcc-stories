@@ -1,15 +1,16 @@
 ---
 author: Sat Naing
-pubDatetime: 2024-01-04T09:30:41.816Z
-title: AstroPaper 4.0
-slug: "astro-paper-v4"
-featured: true
+pubDatetime: 2026-07-10
+modDatetime: 2026-07-10
+title: AstroPaper 6.0
 ogImage: ../../assets/images/AstroPaper-v4.png
+slug: astro-paper-v4
+featured: true
+draft: false
 tags:
   - release
 description: "AstroPaper v4: ensuring a smoother and more feature-rich blogging experience."
 ---
-
 Hello everyone! Wishing you a happy New Year 🎉 and all the best for 2024! We're excited to announce the release of AstroPaper v4, a significant update that introduces a range of new features, improvements, and bug fixes to elevate your blogging experience. A big thank you to all the contributors for their valuable input and efforts in making version 4 possible!
 
 ![AstroPaper v4](@assets/images/AstroPaper-v4.png)
@@ -28,7 +29,7 @@ AstroPaper now leverages the power and capabilities of Astro v4. However, it’s
 
 The `postSlug` in the blog content schema is no longer available in AstroPaper v4. Initially Astro doesn't have a `slug` mechanism and thus we have to figure it out on our own. Since Astro v3, it supports content collection and slug features. Now, we believe it's time to adopt Astro's out-of-the-box `slug` feature.
 
-**_file: src/content/blog/astro-paper-4.md_**
+***file: src/content/blog/astro-paper-4.md***
 
 ```bash
 ---
@@ -52,9 +53,7 @@ AstroPaper now includes VSCode snippets for new blog posts, eliminating the need
 
 Read more about VSCode Snippets [here](https://code.visualstudio.com/docs/editor/userdefinedsnippets#:~:text=In%20Visual%20Studio%20Code%2C%20snippets,Snippet%20in%20the%20Command%20Palette).
 
-<video autoplay muted="muted" controls plays-inline="true" class="border border-skin-line">
-  <source src="https://github.com/satnaing/astro-paper/assets/53733092/136f1903-bade-40a2-b6bb-285a3c726350" type="video/mp4">
-</video>
+
 
 ### Add Modified Datetime in Blog Posts [#195](https://github.com/satnaing/astro-paper/pull/195)
 
@@ -74,9 +73,7 @@ Enhance user navigation on your blog detail post with the newly implemented back
 
 Improve content organization and navigation with the addition of pagination in tag posts, making it easier for users to explore related content. This ensures that if a tag has many posts, readers won't be overwhelmed by all the tag-related posts.
 
-<video autoplay loop="loop" muted="muted" plays-inline="true" class="border border-skin-line">
-  <source src="https://github.com/satnaing/astro-paper/assets/53733092/9bad87f5-dcf5-4b79-b67a-d6c7244cd616" type="video/mp4">
-</video>
+
 
 ### Dynamically Generate robots.txt [#130](https://github.com/satnaing/astro-paper/pull/130)
 
@@ -120,5 +117,6 @@ We believe these updates will significantly elevate your AstroPaper experience. 
 
 Happy Blogging!
 
-[Sat Naing](https://satnaing.dev) <br/>
+[Sat Naing](https://satnaing.dev)   
+
 Creator of AstroPaper
