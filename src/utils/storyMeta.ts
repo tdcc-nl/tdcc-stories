@@ -32,3 +32,10 @@ export const storyTypeLabel = (t?: string | null) =>
   t ? STORY_TYPES[t as StoryType] ?? t : undefined;
 
 export const audienceLabel = (a: string) => AUDIENCES[a as Audience] ?? a;
+
+/**
+ * CSS custom property value for a story type colour (defined in base.css).
+ * Use as `style="--c: ..."` together with the `.type-badge` class.
+ */
+export const storyTypeColor = (t?: string | null) =>
+  t && t in STORY_TYPES ? `var(--type-${t})` : "var(--type-default)";

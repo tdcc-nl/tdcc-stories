@@ -4,18 +4,12 @@ import withBase, { stripBase } from "@utils/withBase";
 const currentUrlPath = stripBase(Astro.url.pathname).replace(/\/+$/, "");
 
 // Get url array from path
-// eg: /tags/tailwindcss => ['tags', 'tailwindcss']
+// eg: /topics/fair => ["topics", "fair"]
 const breadcrumbList = currentUrlPath.split("/").slice(1);
 
-// if breadcrumb is Home > Stories > 1 <etc>
-// replace Stories with Stories (page number)
-breadcrumbList[0] === "stories" &&
-  !isNaN(Number(breadcrumbList[1] || 1)) &&
-  breadcrumbList.splice(0, 2, `Stories (page ${breadcrumbList[1] || 1})`);
-
-// if breadcrumb is Home > Tags > [tag] > [page] <etc>
+// if breadcrumb is Home > Topics > [tag] > [page] <etc>
 // replace [tag] > [page] with [tag] (page number)
-breadcrumbList[0] === "tags" &&
+breadcrumbList[0] === "topics" &&
   !isNaN(Number(breadcrumbList[2])) &&
   breadcrumbList.splice(
     1,
@@ -57,18 +51,15 @@ breadcrumbList[0] === "tags" &&
 
 <style>
   .breadcrumb {
-    @apply mx-auto mb-1 mt-8 w-full max-w-3xl px-4;
+    @apply text-sm text-skin-muted;
   }
   .breadcrumb ul li {
     @apply inline;
   }
   .breadcrumb ul li a {
-    @apply capitalize opacity-70;
+    @apply capitalize hover:text-skin-accent;
   }
-  .breadcrumb ul li span {
-    @apply opacity-70;
-  }
-  .breadcrumb ul li:not(:last-child) a {
-    @apply hover:opacity-100;
+  .breadcrumb ul li span[aria-hidden] {
+    @apply mx-1.5 opacity-50;
   }
 </style>

@@ -1,48 +1,72 @@
 ---
 import Breadcrumbs from "@components/Breadcrumbs.astro";
 
-interface StringTitleProp {
-  pageTitle: string;
+interface BaseProps {
   pageDesc?: string;
+  eyebrow?: string;
+  narrow?: boolean;
 }
 
-interface ArrayTitleProp {
+interface StringTitleProp extends BaseProps {
+  pageTitle: string;
+}
+
+interface ArrayTitleProp extends BaseProps {
   pageTitle: [string, string];
   titleTransition: string;
-  pageDesc?: string;
 }
 
 export type Props = StringTitleProp | ArrayTitleProp;
 
 const { props } = Astro;
+const container = props.narrow ? "container-narrow" : "container-wide";
 ---
 
-<Breadcrumbs />
-<main id="main-content">
-  {
-    "titleTransition" in props ? (
-      <h1>
-        {props.pageTitle[0]}
-        <span transition:name={props.titleTransition}>
-          {props.pageTitle[1]}
-        </span>
-      </h1>
-    ) : (
-      <h1>{props.pageTitle}</h1>
-    )
-  }
-  <p>{props.pageDesc}</p>
+<div class="page-head">
+  <div class={container}>
+    <Breadcrumbs />
+    {props.eyebrow && <p class="eyebrow">{props.eyebrow}</p>}
+    {
+      "titleTransition" in props ? (
+        <h1>
+          {props.pageTitle[0]}{" "}
+          <span class="text-skin-accent" transition:name={props.titleTransition}>
+            {props.pageTitle[1]}
+          </span>
+        </h1>
+      ) : (
+        <h1>{props.pageTitle}</h1>
+      )
+    }
+    {props.pageDesc && <p class="page-desc">{props.pageDesc}</p>}
+  </div>
+</div>
+<main id="main-content" class={`${container} pt-10`}>
   <slot />
 </main>
 
 <style>
-  #main-content {
-    @apply mx-auto w-full max-w-3xl px-4 pb-4;
+  .page-head {
+    @apply border-b border-skin-line pb-10 pt-6;
+    background:
+      radial-gradient(
+        60rem 20rem at 10% -10%,
+        rgb(var(--color-accent) / 0.14),
+        transparent 70%
+      ),
+      radial-gradient(
+        40rem 18rem at 95% 0%,
+        rgb(var(--color-accent-2) / 0.12),
+        transparent 70%
+      );
   }
-  #main-content h1 {
-    @apply text-2xl font-semibold sm:text-3xl;
+  .eyebrow {
+    @apply mt-6 text-xs font-bold uppercase tracking-[0.2em] text-skin-accent;
   }
-  #main-content p {
-    @apply mb-6 mt-2 italic;
+  h1 {
+    @apply mt-3 font-display text-4xl font-extrabold tracking-tight sm:text-5xl;
+  }
+  .page-desc {
+    @apply mt-4 max-w-2xl text-lg text-skin-muted;
   }
 </style>

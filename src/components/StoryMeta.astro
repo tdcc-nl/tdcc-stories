@@ -1,32 +1,28 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { audienceLabel, storyTypeLabel } from "@utils/storyMeta";
+import { audienceLabel } from "@utils/storyMeta";
 
 export interface Props {
   data: CollectionEntry<"blog">["data"];
 }
 
-const { storyType, audience, organisations, contact } = Astro.props.data;
+const { audience, organisations, contact } = Astro.props.data;
 
-const type = storyTypeLabel(storyType);
 const hasContact = contact && (contact.name || contact.email || contact.url);
-const hasAny =
-  type || audience.length > 0 || organisations.length > 0 || hasContact;
+const hasAny = audience.length > 0 || organisations.length > 0 || hasContact;
 ---
 
 {
   hasAny && (
     <dl class="story-meta">
-      {type && (
-        <div>
-          <dt>Story type</dt>
-          <dd>{type}</dd>
-        </div>
-      )}
       {audience.length > 0 && (
         <div>
           <dt>Key audience</dt>
-          <dd>{audience.map(audienceLabel).join(", ")}</dd>
+          <dd class="flex flex-wrap gap-1.5">
+            {audience.map(a => (
+              <span class="chip">{audienceLabel(a)}</span>
+            ))}
+          </dd>
         </div>
       )}
       {organisations.length > 0 && (
@@ -59,15 +55,18 @@ const hasAny =
 
 <style>
   .story-meta {
-    @apply mt-6 grid gap-x-6 gap-y-3 rounded-md border border-skin-line bg-skin-card px-4 py-3 text-sm sm:grid-cols-2;
+    @apply -mt-8 grid gap-3 sm:grid-cols-3;
+  }
+  .story-meta > div {
+    @apply rounded-2xl border border-skin-line bg-skin-card p-4 shadow-sm;
   }
   .story-meta dt {
-    @apply text-xs font-semibold uppercase tracking-wide opacity-70;
+    @apply text-[0.7rem] font-bold uppercase tracking-wider text-skin-muted;
   }
   .story-meta dd {
-    @apply mt-0.5;
+    @apply mt-2 text-sm font-medium;
   }
   .story-meta a {
-    @apply underline decoration-dashed underline-offset-4 hover:text-skin-accent;
+    @apply text-skin-accent hover:underline;
   }
 </style>

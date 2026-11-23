@@ -23,7 +23,7 @@ const searchList = sortedPosts.map(({ data, slug }) => ({
 
 <Layout title={`Search | ${SITE.title}`}>
   <Header activeNav="search" />
-  <Main pageTitle="Search" pageDesc="Search any article ...">
+  <Main eyebrow="Find" pageTitle="Search" pageDesc="Search all stories by title and summary.">
     <SearchBar client:load searchList={searchList} />
   </Main>
   <Footer />

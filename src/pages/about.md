@@ -1,6 +1,7 @@
 ---
 layout: ../layouts/AboutLayout.astro
 title: "About"
+description: "Why this site exists and how to share your own story."
 ---
 
 TDCC Stories collects practical stories from the life sciences and health research community. They cover how people set up data stewardship programmes, built and ran communities, developed interoperable research software and put research infrastructure in place, and what they learned along the way.

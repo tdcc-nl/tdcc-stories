@@ -7,6 +7,7 @@ import Tag from "@components/Tag.astro";
 import Datetime from "@components/Datetime";
 import type { CollectionEntry } from "astro:content";
 import { slugifyStr } from "@utils/slugify";
+import { storyTypeColor, storyTypeLabel } from "@utils/storyMeta";
 import ShareLinks from "@components/ShareLinks.astro";
 import StoryMeta from "@components/StoryMeta.astro";
 import { SITE } from "@config";
@@ -27,7 +28,11 @@ const {
   modDatetime,
   tags,
   links,
+  storyType,
 } = post.data;
+
+const typeLabel = storyTypeLabel(storyType);
+const typeColor = storyTypeColor(storyType);
 
 const { Content } = await post.render();
 
@@ -53,82 +58,121 @@ const layoutProps = {
 <Layout {...layoutProps}>
   <Header />
 
-  <!-- <div class="progress-container fixed top-0 z-10 h-1 w-full bg-skin-fill">
-    <div class="progress-bar h-1 w-0 bg-skin-accent" id="myBar"></div>
-  </div> -->
-
-  <div class="mx-auto flex w-full max-w-3xl justify-start px-2">
-    <button
-      class="focus-outline mb-2 mt-8 flex hover:opacity-75"
-      onclick={`(() => (history.length === 1) ? window.location = '${withBase("/")}' : history.back())()`}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg"
-        ><path
-          d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"
-        ></path>
-      </svg><span>Go back</span>
-    </button>
+  <div class="story-head" style={`--c: ${typeColor}`}>
+    <div class="container-narrow">
+      <button
+        class="back-btn focus-outline"
+        onclick={`(() => (history.length === 1) ? window.location = '${withBase("/stories/")}' : history.back())()`}
+      >
+        ← Back
+      </button>
+      {typeLabel && <span class="type-badge mt-8">{typeLabel}</span>}
+      <h1 transition:name={slugifyStr(title)} class="post-title">{title}</h1>
+      <p class="post-lead">{description}</p>
+      <div class="post-byline">
+        <span class="font-semibold text-skin-base">{author}</span>
+        <span aria-hidden="true">·</span>
+        <Datetime pubDatetime={pubDatetime} modDatetime={modDatetime} size="lg" />
+      </div>
+    </div>
   </div>
-  <main id="main-content">
-    <h1 transition:name={slugifyStr(title)} class="post-title">{title}</h1>
-    <Datetime
-      pubDatetime={pubDatetime}
-      modDatetime={modDatetime}
-      size="lg"
-      className="my-2"
-    />
+
+  <main id="main-content" class="container-narrow">
     <StoryMeta data={post.data} />
-    <article id="article" role="article" class="prose mx-auto mt-8 max-w-3xl">
+    <article id="article" role="article" class="prose mt-10 max-w-none">
       <Content />
-      {
-        links.length > 0 && (
-          <section class="useful-links">
-            <h2>Useful links</h2>
-            <ul>
-              {links.map(link => (
-                <li>
-                  <a href={link.url} target="_blank" rel="noopener">
-                    {link.label ?? link.url}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      }
     </article>
 
-    <ul class="my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} />)}
-    </ul>
+    {
+      links.length > 0 && (
+        <section class="useful-links">
+          <h2>Useful links</h2>
+          <ul>
+            {links.map(link => (
+              <li>
+                <a href={link.url} target="_blank" rel="noopener" class="group">
+                  <span>{link.label ?? link.url}</span>
+                  <span class="link-host">{new URL(link.url).hostname.replace(/^www\./, "")}</span>
+                  <span class="link-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
-    <div
-      class="flex flex-col-reverse items-center justify-between gap-6 sm:flex-row-reverse sm:items-end sm:gap-4"
-    >
-      <button
-        id="back-to-top"
-        class="focus-outline whitespace-nowrap py-1 hover:opacity-75"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90">
-          <path
-            d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"
-          ></path>
-        </svg>
-        <span>Back to Top</span>
-      </button>
+    {
+      tags.length > 0 && tags[0] !== "others" && (
+        <ul class="mt-12 flex flex-wrap gap-2" aria-label="Topics">
+          {tags.map(tag => <Tag tag={slugifyStr(tag)} />)}
+        </ul>
+      )
+    }
 
+    <div class="post-footer">
       <ShareLinks />
+      <button id="back-to-top" class="focus-outline back-top">
+        ↑ Back to top
+      </button>
     </div>
   </main>
   <Footer />
 </Layout>
 
 <style>
-  main {
-    @apply mx-auto w-full max-w-3xl px-4 pb-12;
+  .story-head {
+    @apply border-b border-skin-line pb-12 pt-6;
+    background:
+      radial-gradient(
+        50rem 22rem at 0% 0%,
+        rgb(var(--c) / 0.16),
+        transparent 70%
+      ),
+      radial-gradient(
+        40rem 20rem at 100% 0%,
+        rgb(var(--color-accent-2) / 0.08),
+        transparent 70%
+      );
+  }
+  .back-btn {
+    @apply rounded-full border border-skin-line bg-skin-card px-3 py-1 text-sm font-semibold text-skin-muted transition hover:text-skin-accent;
+  }
+  .story-head .type-badge {
+    @apply mt-8 flex w-fit;
   }
   .post-title {
-    @apply text-2xl font-semibold text-skin-accent;
+    @apply mt-4 font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl;
+  }
+  .post-lead {
+    @apply mt-5 text-lg leading-relaxed text-skin-muted sm:text-xl;
+  }
+  .post-byline {
+    @apply mt-6 flex flex-wrap items-center gap-2 text-sm text-skin-muted;
+  }
+  .useful-links {
+    @apply mt-14;
+  }
+  .useful-links h2 {
+    @apply mb-4 text-2xl font-bold;
+  }
+  .useful-links ul {
+    @apply grid gap-3 sm:grid-cols-2;
+  }
+  .useful-links a {
+    @apply relative flex h-full flex-col rounded-xl border border-skin-line bg-skin-card p-4 pr-10 font-semibold transition hover:-translate-y-0.5 hover:border-skin-accent hover:shadow-md;
+  }
+  .link-host {
+    @apply mt-1 text-xs font-normal text-skin-muted;
+  }
+  .link-arrow {
+    @apply absolute right-4 top-4 text-skin-muted transition group-hover:text-skin-accent;
+  }
+  .post-footer {
+    @apply mt-12 flex flex-col-reverse items-start justify-between gap-6 border-t border-skin-line pt-6 sm:flex-row sm:items-center;
+  }
+  .back-top {
+    @apply text-sm font-semibold text-skin-muted hover:text-skin-accent;
   }
 </style>
 
@@ -139,11 +183,11 @@ const layoutProps = {
     // Create the main container div
     const progressContainer = document.createElement("div");
     progressContainer.className =
-      "progress-container fixed top-0 z-10 h-1 w-full bg-skin-fill";
+      "progress-container fixed top-0 z-50 h-1 w-full";
 
     // Create the progress bar div
     const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar h-1 w-0 bg-skin-accent";
+    progressBar.className = "progress-bar h-1 w-0 bg-gradient-to-r from-skin-accent to-skin-accent-2";
     progressBar.id = "myBar";
 
     // Append the progress bar to the progress container

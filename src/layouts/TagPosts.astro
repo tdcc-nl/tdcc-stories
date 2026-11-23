@@ -20,15 +20,15 @@ export interface Props {
 const { currentPage, totalPages, paginatedPosts, tag, tagName } = Astro.props;
 ---
 
-<Layout title={`Tag: ${tagName} | ${SITE.title}`}>
-  <Header activeNav="tags" />
+<Layout title={`Topic: ${tagName} | ${SITE.title}`}>
+  <Header activeNav="topics" />
   <Main
-    pageTitle={[`Tag:`, `${tagName}`]}
+    eyebrow="Topic"
+    pageTitle={[`#`, `${tagName}`]}
     titleTransition={tag}
     pageDesc={`All stories on the topic "${tagName}".`}
   >
-    <h1 slot="title" transition:name={tag}>{`Tag:${tag}`}</h1>
-    <ul>
+    <ul class="story-grid">
       {
         paginatedPosts.map(({ data, slug }) => (
           <Card href={withBase(`/stories/${slug}/`)} frontmatter={data} />
@@ -40,10 +40,10 @@ const { currentPage, totalPages, paginatedPosts, tag, tagName } = Astro.props;
   <Pagination
     {currentPage}
     {totalPages}
-    prevUrl={withBase(`/tags/${tag}${
+    prevUrl={withBase(`/topics/${tag}${
       currentPage - 1 !== 1 ? "/" + (currentPage - 1) : ""
     }/`)}
-    nextUrl={withBase(`/tags/${tag}/${currentPage + 1}/`)}
+    nextUrl={withBase(`/topics/${tag}/${currentPage + 1}/`)}
   />
 
   <Footer noMarginTop={totalPages > 1} />

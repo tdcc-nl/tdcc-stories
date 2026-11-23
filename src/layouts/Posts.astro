@@ -1,43 +1,36 @@
 ---
 import withBase from "@utils/withBase";
-import type { CollectionEntry } from "astro:content";
+import { type CollectionEntry } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Main from "@layouts/Main.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
-import Pagination from "@components/Pagination.astro";
 import Card from "@components/Card";
+import StoryFilters from "@components/StoryFilters.astro";
 import { SITE } from "@config";
 
 export interface Props {
-  currentPage: number;
-  totalPages: number;
-  paginatedPosts: CollectionEntry<"blog">[];
+  posts: CollectionEntry<"blog">[];
 }
 
-const { currentPage, totalPages, paginatedPosts } = Astro.props;
+const { posts } = Astro.props;
 ---
 
 <Layout title={`Stories | ${SITE.title}`}>
   <Header activeNav="stories" />
-  <Main pageTitle="Stories" pageDesc="All stories from the community.">
-    <ul>
+  <Main
+    eyebrow="All stories"
+    pageTitle="Stories"
+    pageDesc="How-to guides, success stories and lessons learned from the community. Filter by story type or by who the story is for."
+  >
+    <StoryFilters posts={posts} />
+    <ul class="story-grid" data-story-grid>
       {
-        paginatedPosts.map(({ data, slug }) => (
+        posts.map(({ data, slug }) => (
           <Card href={withBase(`/stories/${slug}/`)} frontmatter={data} />
         ))
       }
     </ul>
   </Main>
-
-  <Pagination
-    {currentPage}
-    {totalPages}
-    prevUrl={withBase(
-      `/stories${currentPage - 1 !== 1 ? "/" + (currentPage - 1) : ""}/`
-    )}
-    nextUrl={withBase(`/stories/${currentPage + 1}/`)}
-  />
-
-  <Footer noMarginTop={totalPages > 1} />
+  <Footer />
 </Layout>

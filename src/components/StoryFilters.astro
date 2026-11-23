@@ -1,0 +1,209 @@
+---
+import type { CollectionEntry } from "astro:content";
+import {
+  AUDIENCES,
+  STORY_TYPES,
+  storyTypeColor,
+  type Audience,
+  type StoryType,
+} from "@utils/storyMeta";
+
+export interface Props {
+  posts: CollectionEntry<"blog">[];
+}
+
+const { posts } = Astro.props;
+
+// Only offer filters for values that are actually used
+const usedTypes = new Set(posts.map(p => p.data.storyType).filter(Boolean));
+const usedAudiences = new Set(posts.flatMap(p => p.data.audience));
+
+const types = (Object.keys(STORY_TYPES) as StoryType[]).filter(t =>
+  usedTypes.has(t)
+);
+const audiences = (Object.keys(AUDIENCES) as Audience[]).filter(a =>
+  usedAudiences.has(a)
+);
+---
+
+{
+  (types.length > 0 || audiences.length > 0) && (
+    <div class="filters" data-story-filters>
+      {types.length > 0 && (
+        <div class="filter-row" role="group" aria-label="Filter by story type">
+          <span class="filter-label">Story type</span>
+          {types.map(t => (
+            <button
+              type="button"
+              class="filter-chip filter-chip--type"
+              style={`--c: ${storyTypeColor(t)}`}
+              data-group="type"
+              data-value={t}
+              aria-pressed="false"
+            >
+              {STORY_TYPES[t]}
+            </button>
+          ))}
+        </div>
+      )}
+      {audiences.length > 0 && (
+        <div class="filter-row" role="group" aria-label="Filter by key audience">
+          <span class="filter-label">Key audience</span>
+          {audiences.map(a => (
+            <button
+              type="button"
+              class="filter-chip"
+              data-group="audience"
+              data-value={a}
+              aria-pressed="false"
+            >
+              {AUDIENCES[a]}
+            </button>
+          ))}
+        </div>
+      )}
+      <div class="filter-status">
+        <span data-filter-count aria-live="polite"></span>
+        <button type="button" class="filter-clear" data-filter-clear hidden>
+          Clear filters
+        </button>
+      </div>
+    </div>
+  )
+}
+
+<p class="filter-empty" data-filter-empty hidden>
+  No stories match these filters yet.
+  <button type="button" class="filter-clear" data-filter-clear>
+    Clear filters
+  </button>
+</p>
+
+<style>
+  .filters {
+    @apply mb-10 flex flex-col gap-4 rounded-2xl border border-skin-line bg-skin-card p-5 shadow-sm;
+  }
+  .filter-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+  .filter-label {
+    @apply mr-2 w-full text-xs font-bold uppercase tracking-wider text-skin-muted sm:w-28;
+  }
+  .filter-chip {
+    @apply rounded-full border border-skin-line px-3.5 py-1.5 text-sm font-medium transition hover:border-skin-accent;
+  }
+  .filter-chip[aria-pressed="true"] {
+    @apply border-transparent bg-skin-inverted text-skin-inverted;
+  }
+  .filter-chip--type {
+    color: rgb(var(--c));
+    border-color: rgb(var(--c) / 0.35);
+  }
+  .filter-chip--type:hover {
+    border-color: rgb(var(--c));
+  }
+  .filter-chip--type[aria-pressed="true"] {
+    color: #fff;
+    background: rgb(var(--c));
+    border-color: rgb(var(--c));
+  }
+  .filter-status {
+    @apply flex items-center justify-between border-t border-skin-line pt-3 text-sm text-skin-muted;
+  }
+  .filter-clear {
+    @apply font-semibold text-skin-accent hover:underline;
+  }
+  .filter-empty {
+    @apply rounded-2xl border border-dashed border-skin-line p-10 text-center text-skin-muted;
+  }
+</style>
+
+<script>
+  function initStoryFilters() {
+    const root = document.querySelector<HTMLElement>("[data-story-filters]");
+    if (!root) return;
+    const chips = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("[data-group]")
+    );
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-story-grid] .story-card")
+    );
+    const count = root.querySelector<HTMLElement>("[data-filter-count]");
+    const empty = document.querySelector<HTMLElement>("[data-filter-empty]");
+    const clearBtns = document.querySelectorAll<HTMLButtonElement>(
+      "[data-filter-clear]"
+    );
+
+    const selected = { type: new Set<string>(), audience: new Set<string>() };
+
+    // Restore from URL (?type=a,b&audience=c)
+    const params = new URLSearchParams(location.search);
+    (["type", "audience"] as const).forEach(g =>
+      params
+        .get(g)
+        ?.split(",")
+        .filter(Boolean)
+        .forEach(v => selected[g].add(v))
+    );
+
+    function apply() {
+      let visible = 0;
+      cards.forEach(card => {
+        const type = card.dataset.type ?? "";
+        const aud = (card.dataset.audience ?? "").split(" ").filter(Boolean);
+        const okType = !selected.type.size || selected.type.has(type);
+        const okAud =
+          !selected.audience.size || aud.some(a => selected.audience.has(a));
+        const show = okType && okAud;
+        card.hidden = !show;
+        if (show) visible++;
+      });
+
+      chips.forEach(chip => {
+        const g = chip.dataset.group as "type" | "audience";
+        chip.setAttribute(
+          "aria-pressed",
+          String(selected[g].has(chip.dataset.value ?? ""))
+        );
+      });
+
+      const active = selected.type.size + selected.audience.size > 0;
+      if (count)
+        count.textContent = `Showing ${visible} of ${cards.length} ${
+          cards.length === 1 ? "story" : "stories"
+        }`;
+      clearBtns.forEach(b => {
+        if (!b.closest("[data-filter-empty]")) b.hidden = !active;
+      });
+      if (empty) empty.hidden = visible > 0;
+
+      const url = new URL(location.href);
+      (["type", "audience"] as const).forEach(g => {
+        if (selected[g].size) url.searchParams.set(g, [...selected[g]].join(","));
+        else url.searchParams.delete(g);
+      });
+      history.replaceState(history.state, "", url);
+    }
+
+    chips.forEach(chip =>
+      chip.addEventListener("click", () => {
+        const g = chip.dataset.group as "type" | "audience";
+        const v = chip.dataset.value ?? "";
+        if (selected[g].has(v)) selected[g].delete(v);
+        else selected[g].add(v);
+        apply();
+      })
+    );
+    clearBtns.forEach(b =>
+      b.addEventListener("click", () => {
+        selected.type.clear();
+        selected.audience.clear();
+        apply();
+      })
+    );
+
+    apply();
+  }
+
+  document.addEventListener("astro:page-load", initStoryFilters);
+</script>

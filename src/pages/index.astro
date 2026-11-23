@@ -4,167 +4,186 @@ import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
-import LinkButton from "@components/LinkButton.astro";
-import Hr from "@components/Hr.astro";
 import Card from "@components/Card";
-import Socials from "@components/Socials.astro";
 import getSortedPosts from "@utils/getSortedPosts";
-import { SOCIALS } from "@config";
+import getUniqueTags from "@utils/getUniqueTags";
+import Tag from "@components/Tag.astro";
 
 const posts = await getCollection("blog");
 
 const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
-
-const socialCount = SOCIALS.filter(social => social.active).length;
+const recentPosts = sortedPosts
+  .filter(({ data }) => !data.featured)
+  .slice(0, 6);
+const topics = getUniqueTags(posts).slice(0, 12);
 ---
 
 <Layout>
   <Header />
   <main id="main-content">
-    <section id="hero">
-      <h1>TDCC Stories</h1>
-      <a
-        target="_blank"
-        href={withBase("/rss.xml")}
-        class="rss-link"
-        aria-label="rss feed"
-        title="RSS Feed"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="rss-icon"
-          ><path
-            d="M19 20.001C19 11.729 12.271 5 4 5v2c7.168 0 13 5.832 13 13.001h2z"
-          ></path><path
-            d="M12 20.001h2C14 14.486 9.514 10 4 10v2c4.411 0 8 3.589 8 8.001z"
-          ></path><circle cx="6" cy="18" r="2"></circle>
-        </svg>
-        <span class="sr-only">RSS Feed</span>
-      </a>
-
-      <p>
-        Practical stories from the life sciences and health community in the
-        Netherlands. How people set up data stewardship programmes, built and
-        ran communities, developed interoperable software and put research
-        infrastructure in place, and what they learned along the way.
-      </p>
-      <p>
-        Browse all
-        <LinkButton
-          className="underline decoration-dashed underline-offset-4 hover:text-skin-accent"
-          href={withBase("/stories/")}
-        >
-          stories
-        </LinkButton> or find them by
-        <LinkButton
-          className="underline decoration-dashed underline-offset-4 hover:text-skin-accent"
-          href={withBase("/tags/")}
-        >
-          topic
-        </LinkButton>.
-      </p>
-      {
-        // only display if at least one social link is enabled
-        socialCount > 0 && (
-          <div class="social-wrapper">
-            <div class="social-links">Social Links:</div>
-            <Socials />
-          </div>
-        )
-      }
+    <section class="hero">
+      <div class="container-wide hero-inner">
+        <p class="hero-eyebrow">Stories from the community</p>
+        <h1>
+          Learn from what others have already built
+        </h1>
+        <p class="hero-lead">
+          Practical stories from life sciences and health in the Netherlands.
+          How people set up data stewardship programmes, ran communities,
+          developed interoperable software and put research infrastructure in
+          place, and what they would do differently next time.
+        </p>
+        <div class="hero-actions">
+          <a href={withBase("/stories/")} class="btn btn-primary">
+            Browse stories →
+          </a>
+          <a href={withBase("/topics/")} class="btn btn-secondary">
+            Explore topics
+          </a>
+        </div>
+      </div>
     </section>
-
-    <Hr />
 
     {
       featuredPosts.length > 0 && (
-        <>
-          <section id="featured">
-            <h2>Featured</h2>
-            <ul>
-              {featuredPosts.map(({ data, slug }) => (
-                <Card
-                  href={withBase(`/stories/${slug}/`)}
-                  frontmatter={data}
-                  secHeading={false}
-                />
-              ))}
-            </ul>
-          </section>
-          {recentPosts.length > 0 && <Hr />}
-        </>
-      )
-    }
-
-    {
-      recentPosts.length > 0 && (
-        <section id="recent-posts">
-          <h2>Recent Stories</h2>
-          <ul>
-            {recentPosts.map(
-              ({ data, slug }, index) =>
-                index < 4 && (
-                  <Card
-                    href={withBase(`/stories/${slug}/`)}
-                    frontmatter={data}
-                    secHeading={false}
-                  />
-                )
-            )}
+        <section class="container-wide section">
+          <h2 class="section-title">Featured</h2>
+          <ul class="story-grid">
+            {featuredPosts.map(({ data, slug }) => (
+              <Card
+                href={withBase(`/stories/${slug}/`)}
+                frontmatter={data}
+                secHeading={false}
+                variant="feature"
+              />
+            ))}
           </ul>
         </section>
       )
     }
 
-    <div class="all-posts-btn-wrapper">
-      <LinkButton href={withBase("/stories/")}>
-        All Stories
-        <svg xmlns="http://www.w3.org/2000/svg"
-          ><path
-            d="m11.293 17.293 1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z"
-          ></path>
-        </svg>
-      </LinkButton>
-    </div>
-  </main>
+    {
+      recentPosts.length > 0 && (
+        <section class="container-wide section">
+          <div class="section-head">
+            <h2 class="section-title">Recent stories</h2>
+            <a href={withBase("/stories/")} class="section-link">
+              All stories →
+            </a>
+          </div>
+          <ul class="story-grid">
+            {recentPosts.map(({ data, slug }) => (
+              <Card
+                href={withBase(`/stories/${slug}/`)}
+                frontmatter={data}
+                secHeading={false}
+              />
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
+    {
+      topics.length > 0 && (
+        <section class="container-wide section">
+          <div class="section-head">
+            <h2 class="section-title">Topics</h2>
+            <a href={withBase("/topics/")} class="section-link">
+              All topics →
+            </a>
+          </div>
+          <ul class="flex flex-wrap gap-3">
+            {topics.map(({ tag }) => (
+              <Tag tag={tag} size="lg" />
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="container-wide section">
+      <div class="cta">
+        <div>
+          <h2>Have a story to share?</h2>
+          <p>
+            Set up a fellowship, grew a community or built a piece of
+            infrastructure? Others can learn from it.
+          </p>
+        </div>
+        <a href={withBase("/about/")} class="btn btn-accent">How to contribute</a>
+      </div>
+    </section>
+  </main>
   <Footer />
 </Layout>
 
 <style>
-  /* ===== Hero Section ===== */
-  #hero {
-    @apply pb-6 pt-8;
+  .hero {
+    @apply relative border-b border-skin-line bg-skin-card-muted;
   }
-  #hero h1 {
-    @apply my-4 inline-block text-3xl font-bold sm:my-8 sm:text-5xl;
+  .hero::before {
+    content: "";
+    @apply absolute inset-x-0 top-0 h-1;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--color-brand)),
+      rgb(var(--color-accent)),
+      rgb(var(--color-accent-2))
+    );
   }
-  #hero .rss-link {
-    @apply mb-6;
+  .hero-inner {
+    @apply relative py-16 sm:py-24;
   }
-  #hero .rss-icon {
-    @apply mb-2 h-6 w-6 scale-110 fill-skin-accent sm:mb-3 sm:scale-125;
+  .hero-eyebrow {
+    @apply mb-4 text-xs font-bold uppercase tracking-[0.2em] text-skin-accent;
   }
-  #hero p {
-    @apply my-2;
+  .hero h1 {
+    @apply max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl;
   }
-  .social-wrapper {
-    @apply mt-4 flex flex-col sm:flex-row sm:items-center;
+  .hero-lead {
+    @apply mt-6 max-w-2xl text-lg text-skin-muted;
   }
-  .social-links {
-    @apply mb-1 mr-2 whitespace-nowrap sm:mb-0;
+  .hero-actions {
+    @apply mt-8 flex flex-wrap gap-3;
   }
-
-  /* ===== Featured & Recent Posts Sections ===== */
-  #featured,
-  #recent-posts {
-    @apply pb-6 pt-12;
+  .btn-primary {
+    @apply bg-skin-accent text-skin-inverted shadow-sm hover:shadow-md;
   }
-  #featured h2,
-  #recent-posts h2 {
-    @apply text-2xl font-semibold tracking-wide;
+  .btn-secondary {
+    @apply border border-skin-line bg-skin-card text-skin-base hover:border-skin-accent;
   }
-  .all-posts-btn-wrapper {
-    @apply my-8 text-center;
+  .section {
+    @apply mt-16;
+  }
+  .section-head {
+    @apply mb-6 flex items-end justify-between gap-4;
+  }
+  .section-title {
+    @apply mb-6 text-2xl font-extrabold sm:text-3xl;
+  }
+  .section-head .section-title {
+    @apply mb-0;
+  }
+  .section-link {
+    @apply text-sm font-semibold text-skin-accent hover:underline;
+  }
+  .cta {
+    @apply flex flex-col items-start justify-between gap-6 rounded-3xl border border-skin-line p-8 sm:flex-row sm:items-center sm:p-10;
+    background: linear-gradient(
+      120deg,
+      rgb(var(--color-accent) / 0.12),
+      rgb(var(--color-accent-2) / 0.12)
+    );
+  }
+  .cta h2 {
+    @apply text-2xl font-extrabold;
+  }
+  .cta p {
+    @apply mt-2 max-w-xl text-skin-muted;
+  }
+  .btn-accent {
+    @apply bg-skin-accent text-skin-inverted shadow-md hover:shadow-lg;
   }
 </style>

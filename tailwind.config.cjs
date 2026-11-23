@@ -15,13 +15,17 @@ module.exports = {
     // if one breakpoint is not enough for you
     screens: {
       sm: "640px",
+      md: "768px",
+      lg: "1024px",
     },
 
     extend: {
       textColor: {
         skin: {
           base: withOpacity("--color-text-base"),
+          muted: withOpacity("--color-text-muted"),
           accent: withOpacity("--color-accent"),
+          "accent-2": withOpacity("--color-accent-2"),
           inverted: withOpacity("--color-fill"),
         },
       },
@@ -29,6 +33,8 @@ module.exports = {
         skin: {
           fill: withOpacity("--color-fill"),
           accent: withOpacity("--color-accent"),
+          "accent-2": withOpacity("--color-accent-2"),
+          brand: withOpacity("--color-brand"),
           inverted: withOpacity("--color-text-base"),
           card: withOpacity("--color-card"),
           "card-muted": withOpacity("--color-card-muted"),
@@ -53,8 +59,25 @@ module.exports = {
         },
         transparent: "transparent",
       },
+      gradientColorStops: {
+        skin: {
+          accent: withOpacity("--color-accent"),
+          "accent-2": withOpacity("--color-accent-2"),
+        },
+      },
+      ringColor: {
+        skin: {
+          accent: withOpacity("--color-accent"),
+        },
+      },
+      textDecorationColor: {
+        skin: {
+          accent: withOpacity("--color-accent"),
+        },
+      },
       fontFamily: {
-        mono: ["IBM Plex Mono", "monospace"],
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Plus Jakarta Sans", "Inter", "ui-sans-serif", "sans-serif"],
       },
 
       typography: {
