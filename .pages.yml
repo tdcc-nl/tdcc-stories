@@ -53,23 +53,23 @@ content:
         type: select
         options:
           values:
-            - { value: how-to, label: How-to guide }
-            - { value: success-story, label: Success story }
-            - { value: lessons-learned, label: Lessons learned }
-            - { value: resource-overview, label: Resource overview }
+            - { name: how-to, label: How-to guide }
+            - { name: success-story, label: Success story }
+            - { name: lessons-learned, label: Lessons learned }
+            - { name: resource-overview, label: Resource overview }
       - name: audience
         label: Key audience
         type: select
         options:
           multiple: true
           values:
-            - { value: researchers, label: Researchers }
-            - { value: data-stewards, label: Data stewards }
-            - { value: research-software-engineers, label: Research software engineers }
-            - { value: ri-managers, label: Research infrastructure managers }
-            - { value: community-managers, label: Community managers }
-            - { value: policy-makers, label: Policy makers }
-            - { value: it-infrastructure, label: IT and infrastructure teams }
+            - { name: researchers, label: Researchers }
+            - { name: data-stewards, label: Data stewards }
+            - { name: research-software-engineers, label: Research software engineers }
+            - { name: ri-managers, label: Research infrastructure managers }
+            - { name: community-managers, label: Community managers }
+            - { name: policy-makers, label: Policy makers }
+            - { name: it-infrastructure, label: IT and infrastructure teams }
       - name: organisations
         label: Organisations involved
         type: string
