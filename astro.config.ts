@@ -5,10 +5,14 @@ import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import sitemap from "@astrojs/sitemap";
 import { SITE } from "./src/config";
+import rehypeBase from "./src/utils/rehypeBase";
+
+const BASE = "/tdcc-stories";
 
 // https://astro.build/config
 export default defineConfig({
-  site: SITE.website,
+  site: "https://tdcc-nl.github.io",
+  base: BASE,
   integrations: [
     tailwind({
       applyBaseStyles: false,
@@ -26,6 +30,7 @@ export default defineConfig({
         },
       ],
     ],
+    rehypePlugins: [[rehypeBase, { base: BASE }]],
     shikiConfig: {
       theme: "one-dark-pro",
       wrap: true,
