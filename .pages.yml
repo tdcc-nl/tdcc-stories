@@ -1,25 +1,110 @@
 media:
-  input: public
-  output: /
+  input: public/assets
+  output: /assets
+
 content:
-  - name: posts
-    label: Posts
+  - name: stories
+    label: Stories
     type: collection
     path: src/content/blog
+    filename: "{primary}.md"
     view:
-      fields: [ title, draft, date ]
+      fields: [title, storyType, draft, pubDatetime]
+      primary: title
+      sort: [pubDatetime, title]
+      default:
+        sort: pubDatetime
+        order: desc
     fields:
-      - { name: author, label: Author, type: string }
-      - { name: pubDatetime, label: Date, type: date }
-      - { name: modDatetime, label: Date, type: date }
-      - { name: title, label: Title, type: string, required: true }
-      - { name: ogImage, label: Title, type: string }
-      - { name: slug, label: Slug, type: string }
-      - { name: featured, label: Featured, type: boolean }
-      - { name: draft, label: Draft, type: boolean }
-      - { name: tags, label: Tags, type: string, list: true }
-      - { name: description, label: Description, type: string }
-      - { name: body, label: Body, type: rich-text }
+      # --- Basics ---
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: description
+        label: Summary
+        description: One or two sentences shown on story cards and in search results.
+        type: text
+        required: true
+      - name: pubDatetime
+        label: Publication date
+        type: date
+        required: true
+      - name: modDatetime
+        label: Last updated
+        type: date
+      - name: author
+        label: Author(s)
+        type: string
+        default: TDCC LSH
+      - name: draft
+        label: Draft (not published on the site)
+        type: boolean
+        default: true
+      - name: featured
+        label: Featured on the home page
+        type: boolean
+        default: false
+
+      # --- Story metadata ---
+      # Keep option values in sync with src/utils/storyMeta.ts
+      - name: storyType
+        label: Story type
+        type: select
+        options:
+          values:
+            - { value: how-to, label: How-to guide }
+            - { value: success-story, label: Success story }
+            - { value: lessons-learned, label: Lessons learned }
+            - { value: resource-overview, label: Resource overview }
+      - name: audience
+        label: Key audience
+        type: select
+        options:
+          multiple: true
+          values:
+            - { value: researchers, label: Researchers }
+            - { value: data-stewards, label: Data stewards }
+            - { value: research-software-engineers, label: Research software engineers }
+            - { value: ri-managers, label: Research infrastructure managers }
+            - { value: community-managers, label: Community managers }
+            - { value: policy-makers, label: Policy makers }
+            - { value: it-infrastructure, label: IT and infrastructure teams }
+      - name: organisations
+        label: Organisations involved
+        type: string
+        list: true
+      - name: tags
+        label: Topics
+        description: Short lowercase keywords, e.g. fair, interoperability, community.
+        type: string
+        list: true
+      - name: links
+        label: Useful links
+        type: object
+        list: true
+        fields:
+          - { name: label, label: Label, type: string }
+          - { name: url, label: URL, type: string, required: true }
+      - name: contact
+        label: Contact
+        type: object
+        fields:
+          - { name: name, label: Name, type: string }
+          - { name: email, label: Email, type: string }
+          - { name: url, label: Web page, type: string }
+
+      # --- Advanced ---
+      - name: slug
+        label: URL slug (optional)
+        type: string
+      - name: ogImage
+        label: Social preview image (optional, at least 1200x630)
+        type: image
+      - name: body
+        label: Body
+        type: rich-text
+
   - name: about
     label: About page
     type: file
@@ -27,4 +112,4 @@ content:
     fields:
       - { name: layout, type: string, hidden: true, default: "../layouts/AboutLayout.astro" }
       - { name: title, label: Title, type: string }
-      - { name: body, label: Body, type: rich-text, options: { input: public/assets, output: /assets } }
+      - { name: body, label: Body, type: rich-text }

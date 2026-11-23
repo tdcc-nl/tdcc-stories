@@ -25,13 +25,13 @@ const { currentPage, totalPages, paginatedPosts, tag, tagName } = Astro.props;
   <Main
     pageTitle={[`Tag:`, `${tagName}`]}
     titleTransition={tag}
-    pageDesc={`All the articles with the tag "${tagName}".`}
+    pageDesc={`All stories on the topic "${tagName}".`}
   >
     <h1 slot="title" transition:name={tag}>{`Tag:${tag}`}</h1>
     <ul>
       {
         paginatedPosts.map(({ data, slug }) => (
-          <Card href={withBase(`/posts/${slug}/`)} frontmatter={data} />
+          <Card href={withBase(`/stories/${slug}/`)} frontmatter={data} />
         ))
       }
     </ul>

@@ -1,0 +1,73 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { audienceLabel, storyTypeLabel } from "@utils/storyMeta";
+
+export interface Props {
+  data: CollectionEntry<"blog">["data"];
+}
+
+const { storyType, audience, organisations, contact } = Astro.props.data;
+
+const type = storyTypeLabel(storyType);
+const hasContact = contact && (contact.name || contact.email || contact.url);
+const hasAny =
+  type || audience.length > 0 || organisations.length > 0 || hasContact;
+---
+
+{
+  hasAny && (
+    <dl class="story-meta">
+      {type && (
+        <div>
+          <dt>Story type</dt>
+          <dd>{type}</dd>
+        </div>
+      )}
+      {audience.length > 0 && (
+        <div>
+          <dt>Key audience</dt>
+          <dd>{audience.map(audienceLabel).join(", ")}</dd>
+        </div>
+      )}
+      {organisations.length > 0 && (
+        <div>
+          <dt>Organisations</dt>
+          <dd>{organisations.join(", ")}</dd>
+        </div>
+      )}
+      {hasContact && (
+        <div>
+          <dt>Contact</dt>
+          <dd>
+            {contact.url ? (
+              <a href={contact.url}>{contact.name ?? contact.url}</a>
+            ) : (
+              contact.name
+            )}
+            {contact.email && (
+              <>
+                {(contact.name || contact.url) && " · "}
+                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+              </>
+            )}
+          </dd>
+        </div>
+      )}
+    </dl>
+  )
+}
+
+<style>
+  .story-meta {
+    @apply mt-6 grid gap-x-6 gap-y-3 rounded-md border border-skin-line bg-skin-card px-4 py-3 text-sm sm:grid-cols-2;
+  }
+  .story-meta dt {
+    @apply text-xs font-semibold uppercase tracking-wide opacity-70;
+  }
+  .story-meta dd {
+    @apply mt-0.5;
+  }
+  .story-meta a {
+    @apply underline decoration-dashed underline-offset-4 hover:text-skin-accent;
+  }
+</style>
